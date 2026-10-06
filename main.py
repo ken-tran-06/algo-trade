@@ -16,6 +16,15 @@ def detect_crossovers(data):
 
     for current in range(1, len(data)):
         prev = current - 1
+        signal_date = data.index[current].date()
+        next_day = current + 1
+
+        if next_day >= len(data):
+            continue
+
+        execution_date = data.index[next_day].date()
+        execution_price = data["Open"].iloc[next_day]
+        
         date = data.index[current].date()
         prev_short = data["SMASHORT"].iloc[prev]
         prev_long = data["SMALONG"].iloc[prev]
@@ -30,14 +39,16 @@ def detect_crossovers(data):
             signals.append({
                 "date": date,
                 "signal": "BUY",
-                "price": price
+                "execution_date": execution_date,
+                "price": execution_price
             })
         elif (prev_short >= prev_long and curr_short < curr_long):
             # print(f"{date} SELL")
             signals.append({
                 "date": date,
+                "execution_date": execution_date,
                 "signal": "SELL",
-                "price": price
+                "price": execution_price
             })
 
     return signals
